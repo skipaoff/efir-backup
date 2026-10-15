@@ -24,9 +24,11 @@ from string import Template
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import doc_page
 
-ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", ".."))
-STATE = os.path.join(ROOT, "build", "state.json")
-OUT = os.path.join(ROOT, "build", "Экран.html")
+# в бэкапе всё лежит рядом: istochnik/ — корень, готовый файл кладём на уровень выше
+ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+EKRAN = os.path.abspath(os.path.join(ROOT, ".."))
+STATE = os.path.join(ROOT, "state.json")
+OUT = os.path.join(EKRAN, "Экран.html")
 
 MIME = {".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".webp": "image/webp"}
 LABEL = {"done": "готово", "run": "в работе", "warn": "нужно решить", "wait": "ждёт"}

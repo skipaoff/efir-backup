@@ -28,8 +28,10 @@
 
 У каждого экрана рядом папка `istochnik` с тем, из чего он собирается.
 
-Сайт: `python3 01-sajt/istochnik/site-agent/artifact.py` — читает `state.json`
-и кладёт готовый `Экран.html`. Там же `ofis.py` — офис отдельным файлом.
+Сайт: `python3 01-sajt/istochnik/site-agent/artifact.py` — читает `istochnik/state.json`
+и кладёт готовый `Экран.html` рядом, вместе с документами `doc-01…08.html`.
+Там же `ofis.py` — офис отдельным файлом. Экран лежит доигранным до конца; чтобы
+вернуть его на старт, поставь в `state.json` всем шагам и людям `"status": "wait"`.
 
 Остальные три: `python3 05-reklama/istochnik/build_show.py 03-video` и так далее.
 Ядро общее (`core.html`), у каждого экрана свои `mock_NN`, `scene_NN`, `data_NN`.

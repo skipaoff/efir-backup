@@ -16,9 +16,11 @@ import base64
 import io
 import os
 
-ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", ".."))
+# в бэкапе всё лежит рядом: istochnik/ — корень, готовый файл кладём на уровень выше
+ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+EKRAN = os.path.abspath(os.path.join(ROOT, ".."))
 PIX = os.path.join(ROOT, "assets", "pixel")
-OUT = os.path.join(ROOT, "build", "Офис.html")
+OUT = os.path.join(EKRAN, "Офис.html")
 
 TILE = 16          # размер тайла в пикселях спрайта
 COLS, ROWS = 32, 11

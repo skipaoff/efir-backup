@@ -21,9 +21,11 @@ import re
 import sys
 from string import Template
 
-ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", ".."))
+# в бэкапе корень — папка istochnik, документы кладём рядом с экраном
+ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+EKRAN = os.path.abspath(os.path.join(ROOT, ".."))
 CACHE = os.path.join(ROOT, "cache")
-STATE = os.path.join(ROOT, "build", "state.json")
+STATE = os.path.join(ROOT, "state.json")
 
 
 
@@ -620,7 +622,7 @@ def main():
         foot="".join(foot),
     )
 
-    out = os.path.join(ROOT, "build", "doc-%02d.html" % no)
+    out = os.path.join(EKRAN, "doc-%02d.html" % no)
     os.makedirs(os.path.dirname(out), exist_ok=True)
     io.open(out, "w", encoding="utf-8").write(html)
     print("страница документа собрана: %s (%.0f КБ)" % (out, os.path.getsize(out) / 1024.0))
