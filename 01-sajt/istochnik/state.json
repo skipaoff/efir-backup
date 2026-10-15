@@ -17,49 +17,49 @@
     {
       "name": "AI-аналитик",
       "skill": "competitor-alternatives",
-      "status": "done",
+      "status": "wait",
       "img": "assets/lica/analitik.png"
     },
     {
       "name": "AI-маркетолог",
       "skill": "client-dna",
-      "status": "done",
+      "status": "wait",
       "img": "assets/lica/marketolog.png"
     },
     {
       "name": "AI-стратег",
       "skill": "hunt-ladder",
-      "status": "done",
+      "status": "wait",
       "img": "assets/lica/strateg.png"
     },
     {
       "name": "AI-копирайтер",
       "skill": "copywriting",
-      "status": "done",
+      "status": "wait",
       "img": "assets/lica/kopirayter.png"
     },
     {
       "name": "AI-дизайнер",
       "skill": "site-architecture",
-      "status": "done",
+      "status": "wait",
       "img": "assets/lica/arhitektor.png"
     },
     {
       "name": "AI-продавец",
       "skill": "page-cro",
-      "status": "done",
+      "status": "wait",
       "img": "assets/lica/konversia.png"
     },
     {
       "name": "AI-видеограф",
       "skill": "seedance-master",
-      "status": "done",
+      "status": "wait",
       "img": "assets/lica/videograf.png"
     },
     {
       "name": "AI-разработчик",
       "skill": "PATTERN + taste-skill",
-      "status": "done",
+      "status": "wait",
       "img": "assets/lica/razrabotchik.png"
     }
   ],
