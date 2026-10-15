@@ -119,6 +119,8 @@ def build(slug):
             .replace("__FIN_TEXT__", m["fin"])
             .replace("__GO__", m["go"])
             .replace("__URL__", m["url"])
+            .replace("__URL2__", m.get("url2", ""))
+            .replace("__GO2__", m.get("go2", ""))
             .replace("__SPRITES__", sprites)
             .replace("__VLAD__", vlad)
             .replace("__CREO__", creo))

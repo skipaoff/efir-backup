@@ -16,8 +16,10 @@
     "go": "Смотреть ролик"
   },
   "05-ads": {
-    "url": "https://adsmanager.facebook.com/adsmanager",
-    "go": "Открыть объявление"
+    "url": "https://www.instagram.com/p/Deg9GrssJOE/",
+    "go": "Смотреть объявление в Instagram",
+    "url2": "https://www.facebook.com/61589979999398/posts/122117812689332666/",
+    "go2": "Оно же в Facebook"
   },
   "06-seller": {
     "url": "https://comfort-stom-3.vercel.app/",

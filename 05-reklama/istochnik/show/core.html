@@ -162,6 +162,10 @@ __STAGE_CSS__
   border-radius:999px;padding:5px 11px;font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;
   text-transform:uppercase;white-space:nowrap}
 .snd[data-on="1"]{color:var(--accent);border-color:rgba(49,233,129,.45)}
+.gos{display:flex;flex-wrap:wrap;gap:9px;align-items:center}
+.go.vtoraya{background:transparent;color:var(--ink);border:1px solid var(--line-hot)}
+.go.vtoraya:hover{border-color:var(--accent);color:var(--accent)}
+.go.vtoraya[hidden]{display:none}
 </style>
 
 
@@ -186,7 +190,10 @@ __STAGE_CSS__
       <div class="fin" id="fin" hidden>
         <h2>Готово</h2>
         <p>__FIN_TEXT__</p>
-        <a class="go" id="resGo" href="#" target="_blank" rel="noopener">__GO__</a>
+        <div class="gos">
+          <a class="go" id="resGo" href="#" target="_blank" rel="noopener">__GO__</a>
+          <a class="go vtoraya" id="resGo2" href="#" target="_blank" rel="noopener" hidden></a>
+        </div>
       </div>
     </section>
 
@@ -348,6 +355,10 @@ function frame(now){
   if(finished && el("fin").hidden){
     el("fin").hidden = false;
     el("resGo").href = "__URL__";
+    if("__URL2__".indexOf("http") === 0){
+      const v = el("resGo2");
+      v.href = "__URL2__"; v.textContent = "__GO2__"; v.hidden = false;
+    }
     el("clockLab").textContent = "собрано за";
   }
   requestAnimationFrame(frame);
