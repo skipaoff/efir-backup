@@ -1,0 +1,57 @@
+/* макет: телефон с перепиской — стоит слева, сцена справа */
+.stagewrap{flex-direction:row;align-items:stretch}
+
+.phonewrap{flex:0 0 212px;display:flex}
+.phone{flex:1;border:1px solid var(--line);border-radius:20px;background:#0E141C;padding:8px;
+  display:flex;flex-direction:column;gap:8px;box-shadow:inset 0 0 0 4px rgba(255,255,255,.02)}
+.pbar{display:flex;align-items:center;gap:9px;padding:6px 6px 9px;border-bottom:1px solid var(--line)}
+.pav{width:34px;height:34px;border-radius:50%;flex:none;background:var(--fill) center/cover no-repeat;
+  border:1px dashed var(--line-hot);transition:.5s}
+.pav.on{background-image:url("__CIRCLE_THUMB__");border:1px solid rgba(49,233,129,.55);box-shadow:var(--glow)}
+.pwho{display:flex;flex-direction:column;line-height:1.25;min-width:0}
+.pwho b{font-size:12.5px}
+.phandle{font-family:var(--mono);font-size:9.5px;color:var(--mid)}
+.pwho em{font-family:var(--mono);font-style:normal;font-size:9.5px;color:var(--dim);transition:.3s}
+.pwho em.live{color:var(--accent)}
+.chat{flex:1;display:flex;flex-direction:column;gap:6px;justify-content:flex-end;overflow:hidden}
+.chat.start{justify-content:flex-start}
+.chat>*{flex-shrink:0}
+.msg{max-width:88%;font-size:11.5px;line-height:1.35;padding:7px 10px;border-radius:12px;
+  animation:pop .35s ease both}
+.msg.bot{align-self:flex-start;background:var(--fill);border:1px solid var(--line);border-bottom-left-radius:4px}
+.msg.me{align-self:flex-end;background:rgba(49,233,129,.16);border:1px solid rgba(49,233,129,.35);
+  border-bottom-right-radius:4px}
+.msg.voice{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:10px;color:var(--mid)}
+.msg.voice i{display:block;width:3px;height:10px;border-radius:2px;background:var(--mid)}
+.msg.voice i:nth-child(2){height:16px}.msg.voice i:nth-child(3){height:8px}
+.msg.voice i:nth-child(4){height:18px}.msg.voice i:nth-child(5){height:12px}
+.msg.voice.bot i{background:var(--accent)}
+.msg.circle{padding:0;border:0;background:none;width:112px;height:112px;border-radius:50%;overflow:hidden;
+  box-shadow:0 0 0 2px rgba(49,233,129,.5)}
+.msg.circle video{width:100%;height:100%;object-fit:cover;display:block}
+.msg.pay{display:flex;flex-direction:column;gap:2px;min-width:130px;background:#fff;color:#111;border:0}
+.msg.pay b{font-family:var(--disp);font-size:18px}
+.msg.pay span{font-size:10px;color:#555}
+.msg.pay .ok{color:#1E9E58;font-weight:700}
+.photo.circ{border-radius:50%;background-image:url("__CIRCLE_THUMB__")}
+.paychk{display:grid;grid-template-columns:150px 1fr;gap:16px;align-items:start}
+.paycard{background:#fff;color:#111;border-radius:12px;padding:12px 13px;display:flex;flex-direction:column;gap:3px;
+  box-shadow:0 14px 30px -14px rgba(0,0,0,.7)}
+.paycard b{font-family:var(--disp);font-size:24px}
+.paycard span{font-size:11px;color:#555}
+.paycard .ok{color:#1E9E58;font-weight:700}
+.paycard .dt{font-family:var(--mono);font-size:9.5px;color:#888;margin-top:4px}
+.rules li.strong{color:var(--ink);font-weight:700}
+@media(max-width:700px){.paychk{grid-template-columns:1fr}}
+.setup{display:flex;flex-direction:column;gap:6px;padding:2px 2px 6px}
+.setup div{display:flex;gap:7px;font-size:11px;color:var(--mid);animation:pop .35s ease both}
+.setup div::before{content:"✓";color:var(--accent);font-family:var(--mono);font-size:10px}
+.setup div.now{color:var(--ink)}
+.setup div.now::before{content:"•";color:var(--blue)}
+.empty{font-family:var(--mono);font-size:10px;color:var(--dim);text-align:center;padding-bottom:10px}
+@media(max-width:900px){
+  .stagewrap{flex-direction:column}
+  .phonewrap{flex:0 0 auto;max-width:240px;align-self:center}
+  .phone{min-height:300px}
+  .stagewrap .scene{min-height:200px}
+}

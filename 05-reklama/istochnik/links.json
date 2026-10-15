@@ -1,0 +1,26 @@
+{
+  "01-leads": {
+    "url": "#leads",
+    "go": "Скопировать все номера"
+  },
+  "02-site": {
+    "url": "https://comfort-stom-1.vercel.app/",
+    "go": "Открыть сайт"
+  },
+  "03-video": {
+    "url": "https://comfort-stom-2.vercel.app/",
+    "go": "Открыть сайт со звонком"
+  },
+  "04-creo": {
+    "url": "#creo",
+    "go": "Смотреть ролик"
+  },
+  "05-ads": {
+    "url": "https://adsmanager.facebook.com/adsmanager",
+    "go": "Открыть объявление"
+  },
+  "06-seller": {
+    "url": "https://comfort-stom-3.vercel.app/",
+    "go": "Открыть сайт с продавцом"
+  }
+}

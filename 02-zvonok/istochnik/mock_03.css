@@ -1,0 +1,16 @@
+.browser{border:1px solid var(--line);border-radius:11px;overflow:hidden;background:var(--deep);position:relative}
+.chrome{display:flex;align-items:center;gap:7px;padding:7px 11px;background:#0F151E;border-bottom:1px solid var(--line)}
+.chrome i{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.14);display:block}
+.url{font-family:var(--mono);font-size:10px;color:var(--dim);margin-left:6px}
+.site{position:relative;height:180px;overflow:hidden;
+  background:#E6E1D8 url("__SITE_DESK__") 50% 58%/cover no-repeat}
+.site .h{font-family:var(--disp);font-size:18px;letter-spacing:-.02em;max-width:22ch;line-height:1.25}
+.site .p{font-size:12px;color:var(--mid);max-width:34ch}
+.srv{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+.srv span{font-size:11px;color:var(--mid);border:1px solid var(--line);border-radius:8px;padding:4px 8px;background:var(--fill)}
+.scan{position:absolute;left:0;right:0;height:56px;pointer-events:none;opacity:0;
+  background:linear-gradient(180deg,transparent,rgba(61,139,255,.18),transparent);
+  border-top:1px solid rgba(61,139,255,.55)}
+.scan.on{opacity:1;animation:scan 2.6s linear infinite}
+@keyframes scan{from{top:-56px}to{top:180px}}
+

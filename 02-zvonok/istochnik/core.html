@@ -1,0 +1,308 @@
+<title>__PAGE_TITLE__</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600&family=Manrope:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  --void:#06090D; --deep:#0B1017; --panel:#141A23; --raise:#1B2331;
+  --line:rgba(255,255,255,.10); --line-hot:rgba(255,255,255,.20); --fill:rgba(255,255,255,.04);
+  --ink:#F4F2EC; --mid:#93A0AE; --dim:#5E6B79;
+  --accent:#31E981; --accent-dim:#1E9E58; --blue:#3D8BFF; --amber:#FFB02E; --danger:#FF5C5C;
+  --glow:0 0 0 1px rgba(49,233,129,.22), 0 0 30px -10px rgba(49,233,129,.35);
+  --glow-blue:0 0 0 1px rgba(61,139,255,.24), 0 0 28px -10px rgba(61,139,255,.45);
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,monospace;
+  --disp:Unbounded,Manrope,system-ui,sans-serif;
+  --body:Manrope,system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box}
+body{background:var(--void);color:var(--ink);font-family:var(--body);font-size:14px;line-height:1.45;
+  padding:14px 16px 20px;
+  background-image:radial-gradient(900px 420px at 78% -8%,rgba(49,233,129,.09),transparent 60%),
+                   radial-gradient(700px 380px at 6% 104%,rgba(61,139,255,.10),transparent 62%)}
+.wrap{max-width:1240px;margin:0 auto;display:flex;flex-direction:column;gap:11px}
+
+/* ── шапка ───────────────────────────────────────────── */
+.top{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;
+  background:linear-gradient(180deg,var(--raise),var(--panel));border:1px solid var(--line);
+  border-radius:14px;padding:11px 16px}
+.top h1{font-family:var(--disp);font-size:clamp(16px,2.2vw,20px);font-weight:600;margin:0;letter-spacing:-.02em}
+.top .who{color:var(--mid);font-size:12.5px;margin-top:1px}
+.spacer{flex:1 1 30px}
+.clock{font-family:var(--mono);font-size:23px;font-weight:600;font-variant-numeric:tabular-nums}
+.lab{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+.mark{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--dim);border:1px solid var(--line);border-radius:999px;padding:4px 9px}
+.bar{height:3px;border-radius:2px;background:var(--line);overflow:hidden;flex:1 1 100%;min-width:180px}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--accent));transition:width .3s linear}
+
+/* ── сетка ───────────────────────────────────────────── */
+.grid{display:grid;grid-template-columns:minmax(280px,330px) 1fr;gap:11px;align-items:stretch}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+/* один размер экрана у всех модулей */
+@media(min-width:901px){
+  .grid{height:500px}
+  .stack,.stagewrap{height:100%;min-height:0}
+  .stagewrap .scene{flex:1 1 auto;height:auto;min-height:0}
+}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px}
+
+/* ── стопка шагов ────────────────────────────────────── */
+.stack{padding:10px;display:flex;flex-direction:column;overflow:hidden}
+#steps{display:flex;flex-direction:column;gap:4px}
+.st{border:1px solid var(--line);border-radius:11px;background:var(--fill);padding:8px 11px;
+  display:grid;grid-template-columns:16px 1fr;gap:9px;align-items:start;transition:.4s ease}
+.st .tick{width:11px;height:11px;border-radius:50%;border:2px solid var(--line-hot);margin-top:3px;flex:none;transition:.3s}
+.st h3{font-family:var(--body);font-size:13px;font-weight:700;margin:0;line-height:1.3}
+.st .sub{font-size:11.5px;color:var(--dim);margin-top:1px}
+.st.wait{opacity:.35;padding:5px 11px;border-color:transparent;background:transparent}
+.st.wait h3{font-weight:500;font-size:12.5px;color:var(--mid)}
+.st.wait .sub,.st.wait .log{display:none}
+.st.done{margin-top:-3px;opacity:.72;padding:6px 11px;
+  background:linear-gradient(180deg,rgba(49,233,129,.07),var(--fill));box-shadow:0 4px 12px -8px #000}
+.st.done .sub,.st.done .log{display:none}
+.st.done .tick{border-color:var(--accent);background:var(--accent);
+  box-shadow:0 0 0 3px rgba(49,233,129,.14)}
+.st.run{opacity:1;background:var(--raise);border-color:rgba(61,139,255,.35);box-shadow:var(--glow-blue)}
+.st.run .tick{border-color:var(--blue);background:var(--blue);animation:pulse 1.4s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(61,139,255,.55)}50%{box-shadow:0 0 0 7px rgba(61,139,255,0)}}
+.log{list-style:none;margin:7px 0 0;padding:0;display:flex;flex-direction:column;gap:4px}
+.log li{font-size:12px;color:var(--mid);display:flex;gap:7px;align-items:flex-start;animation:slide .35s ease both}
+.log li::before{content:"";width:4px;height:4px;border-radius:50%;background:var(--blue);margin-top:7px;flex:none}
+.log li.ok::before{background:var(--accent)}
+@keyframes slide{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ── сцена ───────────────────────────────────────────── */
+.stagewrap{padding:12px;display:flex;flex-direction:column;gap:11px}
+__STAGE_CSS__
+/* панель сцены */
+.scene{border:1px solid var(--line);border-radius:11px;background:var(--deep);padding:12px;
+  height:200px;overflow:hidden}
+@media(max-width:900px){.scene{height:auto;min-height:200px}}
+.it{opacity:0;transform:translateY(7px);transition:opacity .5s ease,transform .5s ease}
+.it.on{opacity:1;transform:none}
+.scene .lab{margin-bottom:9px;display:block}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-family:var(--mono);font-size:10.5px;color:var(--ink);background:var(--fill);
+  border:1px solid var(--line-hot);border-radius:999px;padding:5px 10px}
+@keyframes pop{from{opacity:0;transform:translateY(6px) scale(.92)}to{opacity:1;transform:none}}
+.kb{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:8px}
+.kb div{border:1px solid var(--line);border-radius:9px;padding:8px 10px;background:var(--fill)}
+.kb b{display:block;font-size:12px}
+.kb span{font-family:var(--mono);font-size:10.5px;color:var(--mid)}
+.flow{display:flex;flex-direction:column;gap:7px}
+.node{display:flex;gap:10px;align-items:center;border:1px solid var(--line);border-radius:9px;
+  padding:7px 11px;background:var(--fill)}
+.node em{font-family:var(--mono);font-style:normal;font-size:10px;color:var(--dim);letter-spacing:.1em}
+.node.branch{border-color:rgba(49,233,129,.45);box-shadow:0 0 0 1px rgba(49,233,129,.16)}
+.node b{font-size:12.5px}
+.node .t{font-size:12px;color:var(--mid)}
+.rules{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.rules li{font-size:12px;color:var(--mid);display:flex;gap:8px}
+.rules li::before{content:"×";color:var(--amber);font-family:var(--mono);font-weight:600}
+.rules.yes li::before{content:"✓";color:var(--accent)}
+.person{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.photo{width:92px;height:92px;border-radius:12px;flex:none;background:var(--fill) center/cover no-repeat;
+  background-image:url("__VLAD__");border:1px solid rgba(49,233,129,.45);box-shadow:var(--glow)}
+.traits{display:flex;flex-direction:column;gap:7px;min-width:180px;flex:1 1 220px}
+.tr{display:flex;gap:9px;align-items:baseline;font-size:12px}
+.tr b{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);
+  min-width:62px}
+.tr span{color:var(--mid)}
+.wave{display:flex;gap:3px;align-items:flex-end;height:36px;margin-left:4px}
+.wave i{width:3px;background:linear-gradient(180deg,var(--accent),var(--blue));border-radius:2px;
+  animation:eq 1.1s ease-in-out infinite}
+@keyframes eq{0%,100%{height:7px}50%{height:30px}}
+.qa{display:flex;flex-direction:column;gap:8px}
+.qa .q{font-size:12px;color:var(--mid)}
+.qa .a{font-size:12px;background:var(--fill);border:1px solid var(--line);border-left:2px solid var(--accent);
+  border-radius:8px;padding:7px 10px;margin-top:3px}
+.qa .a b{color:var(--accent);font-family:var(--mono);font-size:10.5px}
+
+/* ── команда ─────────────────────────────────────────── */
+.crew{position:relative;padding:12px 14px 10px;overflow:hidden;
+  background:linear-gradient(180deg,#0C121B 0%,#10161F 62%,#141A23 100%)}
+.crew::after{content:"";position:absolute;left:0;right:0;bottom:44px;height:1px;background:var(--line)}
+.crew .lab{position:relative;z-index:2}
+.team{display:flex;gap:6px;justify-content:space-between;margin-top:16px;position:relative;z-index:2}
+.mate{flex:1 1 0;min-width:78px;display:flex;flex-direction:column;align-items:center;gap:4px;
+  opacity:.4;transition:opacity .4s}
+.mate.was{opacity:.7}
+.mate.now{opacity:1}
+.ag{width:42px;height:84px;image-rendering:pixelated;background-repeat:no-repeat;
+  background-size:294px 252px;background-position:0 0;position:relative}
+.mate.now .ag{animation:walk 1s steps(6) infinite}
+.mate.now::before{content:attr(data-say);position:absolute;top:-4px;left:50%;transform:translateX(-50%);
+  font-family:var(--mono);font-size:10px;color:var(--ink);white-space:nowrap;
+  background:var(--raise);border:1px solid rgba(61,139,255,.35);border-radius:8px;padding:4px 9px;
+  box-shadow:var(--glow-blue);animation:pop .4s ease both;z-index:3}
+.mate{position:relative;padding-top:18px}
+.mate:first-child::before{left:0;transform:none}
+.mate:last-child::before{left:auto;right:0;transform:none}
+.nm{white-space:nowrap}
+@keyframes walk{from{background-position-x:-42px}to{background-position-x:-294px}}
+.nm{font-size:11.5px;font-weight:700;text-align:center;line-height:1.2}
+.mate.now .nm{color:var(--ink)}
+.role{font-family:var(--mono);font-size:9.5px;color:var(--dim);text-align:center}
+.mate.was .nm::after{content:" ✓";color:var(--accent)}
+@media(max-width:700px){.team{flex-wrap:wrap}.mate{flex:1 1 30%}}
+
+/* ── результат ───────────────────────────────────────── */
+.fin[hidden]{display:none}
+.fin{margin-top:8px;border:1px solid rgba(49,233,129,.45);border-radius:12px;box-shadow:var(--glow);
+  background:linear-gradient(180deg,rgba(49,233,129,.10),var(--fill));padding:13px 14px;
+  display:flex;flex-direction:column;gap:8px;align-items:flex-start;animation:pop .5s ease both}
+.fin h2{font-family:var(--disp);font-size:15px;font-weight:600;margin:0}
+.fin p{margin:0;font-size:12px;color:var(--mid)}
+.go{font-family:var(--body);font-weight:700;font-size:13px;color:#06090D;text-decoration:none;
+  background:linear-gradient(135deg,var(--accent),var(--accent-dim));border-radius:10px;padding:10px 17px;
+  box-shadow:0 14px 30px -14px rgba(49,233,129,.85);transition:.3s}
+.go:hover{transform:translateY(-1px)}
+.go:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+.foot{font-family:var(--mono);font-size:10px;color:var(--dim);letter-spacing:.06em;text-align:center}
+</style>
+
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>__TITLE__</h1>
+      <div class="who">__WHO__</div>
+    </div>
+    <div class="spacer"></div>
+    <div>
+      <span class="lab" id="clockLab">времени прошло</span>
+      <div class="clock" id="clock">0:00</div>
+    </div>
+    <div class="bar"><i id="prog"></i></div>
+  </header>
+
+  <div class="grid">
+    <section class="card stack" aria-label="Шаги сборки">
+      <div id="steps"></div>
+      <div class="fin" id="fin" hidden>
+        <h2>Готово</h2>
+        <p>__FIN_TEXT__</p>
+        <a class="go" id="resGo" href="#" target="_blank" rel="noopener">__GO__</a>
+      </div>
+    </section>
+
+    <section class="card stagewrap">
+__STAGE_HTML__
+      <div class="scene" id="scene">
+        <span class="lab" id="sceneLab">сцена</span>
+        <div id="sceneBody"></div>
+      </div>
+    </section>
+  </div>
+
+  <section class="card crew" id="crew">
+    <span class="lab">кто сейчас работает</span>
+    <div class="team" id="team"></div>
+  </section>
+
+</div>
+
+<script>
+const el = id => document.getElementById(id);
+const SPRITES = __SPRITES__;
+__DATA_JS__
+
+__SCENE_JS__
+
+/* шаги */
+const stepsBox = el("steps");
+STEPS.forEach((s,i)=>{
+  const d = document.createElement("div");
+  d.className = "st wait"; d.id = "st"+i;
+  d.innerHTML = '<div class="tick"></div><div><h3>'+s.t+'</h3><div class="sub">'+s.sub+'</div><ul class="log" id="lg'+i+'"></ul></div>';
+  stepsBox.appendChild(d);
+});
+
+/* команда: если её нет, полосу прячем */
+const teamBox = el("team");
+if(!CREW.length) el("crew").hidden = true;
+CREW.forEach((m,i)=>{
+  const d = document.createElement("div");
+  d.className = "mate"; d.id = "mt"+i; d.setAttribute("data-say", m[2]);
+  const hue = i >= SPRITES.length ? 'filter:hue-rotate('+((i*83)%360)+'deg) saturate(1.2);' : '';
+  d.innerHTML = '<div class="ag" style="'+hue+'background-image:url('+SPRITES[i % SPRITES.length]+')"></div>'+
+                '<div class="nm">'+m[0]+'</div><div class="role">'+m[1]+'</div>';
+  teamBox.appendChild(d);
+});
+
+const TOTAL = STEPS.reduce((a,s)=>a+s.dur,0);
+const START = parseFloat(new URLSearchParams(location.search).get('t') || '0');
+let speed = 1, elapsed = Math.min(TOTAL, isFinite(START) && START > 0 ? START : 0), last = performance.now(), builtStep = -1;
+const shown = new Set();
+
+function buildScene(i){
+  const s = STEPS[i];
+  el("sceneLab").textContent = LAB[s.scene];
+  el("sceneBody").innerHTML = BUILD[s.scene]();
+  if(window.STAGE && STAGE.enter) STAGE.enter(s.scene);
+  builtStep = i;
+}
+function revealScene(frac){
+  const items = el("sceneBody").querySelectorAll(".it");
+  items.forEach((n,j)=>{
+    const at = n.dataset.at ? parseFloat(n.dataset.at) : .08 + (j / Math.max(1, items.length)) * .78;
+    if(frac >= at) n.classList.add("on");
+  });
+}
+
+function frame(now){
+  const dt = Math.min(0.25,(now-last)/1000); last = now;
+  if(elapsed < TOTAL) elapsed = Math.min(TOTAL, elapsed + dt*speed);
+
+  const m = Math.floor(elapsed/60), sec = Math.floor(elapsed%60);
+  el("clock").textContent = m+":"+String(sec).padStart(2,"0");
+  el("prog").style.width = (elapsed/TOTAL*100)+"%";
+
+  let acc = 0, cur = STEPS.length-1, frac = 1;
+  for(let i=0;i<STEPS.length;i++){
+    if(elapsed < acc+STEPS[i].dur){ cur = i; frac = (elapsed-acc)/STEPS[i].dur; break; }
+    acc += STEPS[i].dur;
+  }
+  const finished = elapsed >= TOTAL;
+
+  STEPS.forEach((s,i)=>{
+    const node = el("st"+i);
+    const cls = finished || i<cur ? "st done" : i===cur ? "st run" : "st wait";
+    if(node.className !== cls) node.className = cls;
+    s.log.forEach(([at,text,ok],j)=>{
+      const key = i+"-"+j;
+      if(shown.has(key)) return;
+      if(finished || i<cur || (i===cur && frac>=at)){
+        shown.add(key);
+        const li = document.createElement("li");
+        if(ok) li.className = "ok";
+        li.textContent = text;
+        el("lg"+i).appendChild(li);
+      }
+    });
+  });
+
+  const activeMate = finished ? -1 : STEPS[cur].who;
+  if(CREW.length) CREW.forEach((m,i)=>{
+    const done = finished || i < STEPS[cur].who;
+    const cls = i === activeMate ? "mate now" : done ? "mate was" : "mate";
+    const node = el("mt"+i);
+    if(node.className !== cls) node.className = cls;
+  });
+
+  if(builtStep !== cur) buildScene(cur);
+  revealScene(finished ? 1 : frac);
+  if(window.STAGE && STAGE.tick) STAGE.tick(STEPS[cur].scene, finished ? 1 : frac, finished, elapsed / TOTAL);
+
+  if(finished && el("fin").hidden){
+    el("fin").hidden = false;
+    el("resGo").href = "__URL__";
+    el("clockLab").textContent = "собрано за";
+  }
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+// скорость меняется только адресом: ?speed=4 — для репетиции, в кадре этого нет
+const SPEED = parseFloat(new URLSearchParams(location.search).get("speed") || "1");
+if (isFinite(SPEED) && SPEED > 0) speed = SPEED;
+</script>
