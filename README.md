@@ -45,3 +45,14 @@
 
 - Короткая версия со скиллом и артефактами — [biznes-pod-klyuch](https://github.com/skipaoff/biznes-pod-klyuch)
 - Шесть длинных самоиграющих экранов целиком — [ekrany-agentov](https://github.com/skipaoff/ekrany-agentov)
+
+## Как поставить скиллом
+
+```
+mkdir -p ~/.claude/skills && curl -sL https://github.com/skipaoff/efir-backup/archive/refs/heads/main.tar.gz | tar -xz -C ~/.claude/skills && rm -rf ~/.claude/skills/efir && mv ~/.claude/skills/efir-backup-main ~/.claude/skills/efir && rm -rf ~/.claude/skills/efir/04-video/originaly
+```
+
+Проверить: `python3 ~/.claude/skills/efir/proverka.py`
+
+Дальше в новой сессии пишешь обычным текстом: «вот ссылка на их сайт, собери новый»,
+«сделай продавца», «сделай видео», «запускай рекламу».
