@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI-креативщик</title>
+<style>
+  @font-face { font-family: 'Onest'; src: url('lib/Onest-ExtraBold.ttf'); font-weight: 800; font-display: swap; }
+  @font-face { font-family: 'OnestB'; src: url('lib/Onest-Black.ttf'); font-weight: 900; font-display: swap; }
+
+  :root {
+    --bg: #060f0d; --panel: #0d1917; --panel2: #13211e; --line: #1e332e;
+    --text: #eaf4f2; --dim: #7b968f; --accent: #4ED8C4; --accent-dim: #2b6f66; --warn: #f0b64d;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: 'Onest', system-ui, -apple-system, 'Segoe UI', sans-serif; font-weight: 800;
+    background-image: radial-gradient(1100px 600px at 8% -14%, rgba(78,216,196,.13), transparent 60%);
+    padding: 22px 26px; display: flex; flex-direction: column;
+  }
+  #root { flex: 1 1 auto; display: flex; flex-direction: column; gap: 16px; min-height: 0; }
+
+  button, input { font: inherit; color: inherit; appearance: none; -webkit-appearance: none;
+    background: var(--panel2); border: 1px solid var(--line); border-radius: 12px; padding: 13px 17px; }
+  button { cursor: pointer; transition: .15s; font-size: 15px; }
+  button:hover:not(:disabled) { border-color: var(--accent-dim); }
+  button:disabled { opacity: .4; cursor: default; }
+  button.go { background: var(--accent); color: #04211c; border-color: var(--accent);
+    font-family: 'OnestB', sans-serif; font-weight: 900; padding: 14px 30px; font-size: 16px; }
+
+  /* ── ШАПКА ── */
+  .top { display: flex; align-items: center; gap: 14px; flex: 0 0 auto; }
+  .logo { font-family: 'OnestB', sans-serif; font-weight: 900; font-size: 24px; letter-spacing: -.02em; white-space: nowrap; }
+  .logo span { color: var(--accent); }
+  .top input { flex: 1; font-weight: 500; font-size: 16px; }
+  .top input::placeholder { color: #55736d; }
+  .hint { display: flex; gap: 8px; flex: 0 0 auto; }
+  .hint button { padding: 9px 14px; font-size: 13px; border-radius: 99px; border-style: dashed; color: var(--dim); background: none; }
+  .hint button:hover:not(:disabled) { color: var(--accent); }
+
+  /* ── ПОЛЕ ── */
+  .body { flex: 1 1 auto; display: grid; grid-template-columns: 250px 1fr; gap: 18px; min-height: 0; }
+
+  .steps { display: flex; flex-direction: column; gap: 9px; min-height: 0; }
+  .st { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 13px 15px; transition: .3s;
+    flex: 1 1 0; display: flex; flex-direction: column; justify-content: center; }
+  .st.active { border-color: var(--accent); background: var(--panel2); box-shadow: 0 0 0 4px rgba(78,216,196,.07); }
+  .st.done { border-color: #24483f; }
+  .st .row { display: flex; align-items: center; gap: 10px; }
+  .st em { font-style: normal; width: 26px; height: 26px; flex: 0 0 26px; border-radius: 8px; display: grid; place-items: center;
+    background: #142623; color: var(--dim); font-size: 13px; }
+  .st.active em { background: var(--accent); color: #04211c; }
+  .st.done em { background: #1b3d36; color: var(--accent); }
+  .st b { font-family: 'OnestB', sans-serif; font-weight: 900; font-size: 15.5px; }
+  .st .p { height: 4px; background: #0b1614; border-radius: 99px; overflow: hidden; margin-top: 10px; }
+  .st .p i { display: block; height: 100%; background: var(--accent); transition: width .5s ease; }
+
+  .scene { display: flex; flex-direction: column; gap: 14px; min-height: 0; }
+
+  .stage { flex: 1 1 auto; background: var(--panel); border: 1px solid var(--line); border-radius: 20px;
+    display: grid; place-items: center; overflow: hidden; position: relative; min-height: 0; padding: 20px; }
+  .stage > * { max-width: 100%; max-height: 100%; }
+  .stage > .fin { height: 100%; }
+  .stage .shot { width: 100%; height: 100%; object-fit: contain; border-radius: 12px; display: block; animation: swap .5s ease; }
+  @keyframes swap { from { opacity: 0; transform: scale(.975); } to { opacity: 1; transform: none; } }
+  .stage .tag { position: absolute; left: 20px; top: 18px; background: rgba(6,15,13,.88); border: 1px solid var(--line);
+    border-radius: 99px; padding: 8px 16px; font-size: 13.5px; font-weight: 500; }
+  .stage .tag b { color: var(--accent); font-family: 'OnestB', sans-serif; font-weight: 900; }
+  .stage .idle { color: #46615c; font-size: 17px; text-align: center; max-width: 460px; line-height: 1.5; font-weight: 500; }
+  .stage pre { font-family: ui-monospace, Consolas, monospace; font-size: clamp(15px, 1.3vw, 21px); line-height: 2; color: #a8ccc5;
+    white-space: pre-wrap; font-weight: 400; max-height: 100%; overflow: hidden; animation: swap .5s ease; }
+  .stage video { width: 100%; height: 100%; object-fit: contain; border-radius: 12px; background: #000; }
+
+  .fin { display: flex; gap: 30px; align-items: center; justify-content: center; width: 100%; height: 100%; align-self: stretch; animation: swap .5s ease; min-height: 0; }
+  .fin video { height: 100%; max-height: 100%; width: auto; max-width: 52%; object-fit: contain; border-radius: 14px; background: #000; flex: 0 0 auto; }
+  .fin .info { flex: 0 1 380px; min-width: 240px; }
+  .fin .info h4 { font-family: 'OnestB', sans-serif; font-weight: 900; font-size: clamp(30px, 3.2vw, 46px); line-height: 1.05; letter-spacing: -.02em; }
+  .fin .info h4 span { color: var(--accent); }
+  .fin .info p { color: var(--dim); font-size: 16px; margin-top: 12px; font-weight: 500; }
+  .fin .info ul { list-style: none; margin-top: 20px; display: grid; gap: 9px; }
+  .fin .info li { display: flex; gap: 10px; align-items: center; font-size: 15.5px; }
+  .fin .info li em { font-style: normal; color: var(--accent); }
+
+  .render { text-align: center; animation: swap .4s ease; }
+  .render .big { font-family: 'OnestB', sans-serif; font-weight: 900; font-size: clamp(56px, 8vw, 96px); color: var(--accent); line-height: 1; }
+  .render .cap { font-size: 17px; color: var(--dim); margin-top: 14px; font-weight: 500; }
+  .render .ring { width: min(52vh, 320px); height: 6px; background: #0b1614; border-radius: 99px; margin: 22px auto 0; overflow: hidden; }
+  .render .ring i { display: block; height: 100%; background: linear-gradient(90deg, var(--accent-dim), var(--accent)); transition: width .4s linear; }
+
+  .say { flex: 0 0 auto; background: linear-gradient(180deg, var(--panel2), var(--panel));
+    border: 1px solid var(--accent-dim); border-radius: 16px; padding: 16px 20px; display: flex; align-items: center; gap: 15px; }
+  .say.idle { border-color: var(--line); }
+  .dot { width: 11px; height: 11px; flex: 0 0 11px; border-radius: 99px; background: var(--accent);
+    box-shadow: 0 0 0 0 rgba(78,216,196,.55); animation: pulse 1.6s infinite; }
+  .say.idle .dot { animation: none; background: #2a413c; }
+  @keyframes pulse { 70% { box-shadow: 0 0 0 13px rgba(78,216,196,0); } 100% { box-shadow: 0 0 0 0 rgba(78,216,196,0); } }
+  .say .who { font-family: 'OnestB', sans-serif; font-weight: 900; font-size: 17px; color: var(--accent); white-space: nowrap; }
+  .say .txt { font-size: 18px; line-height: 1.3; flex: 1; }
+  .say .txt.warn { color: var(--warn); }
+  .say .num { font-family: 'OnestB', sans-serif; font-weight: 900; font-size: 22px; color: var(--accent); white-space: nowrap; }
+
+  .strip { flex: 0 0 auto; display: flex; gap: 10px; overflow-x: auto; padding-bottom: 4px; min-height: 90px; align-items: center; }
+  .strip::-webkit-scrollbar { height: 6px; }
+  .strip::-webkit-scrollbar-thumb { background: #1e332e; border-radius: 99px; }
+  .thumb { flex: 0 0 130px; height: 82px; border-radius: 11px; overflow: hidden; border: 1px solid var(--line);
+    background: var(--panel); position: relative; animation: swap .4s ease backwards; }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; opacity: .85; }
+  .thumb .n { position: absolute; left: 0; right: 0; bottom: 0; background: linear-gradient(transparent, rgba(6,15,13,.94));
+    padding: 16px 8px 6px; font-size: 11.5px; font-family: 'OnestB', sans-serif; font-weight: 900; }
+  .thumb.txt { display: grid; place-items: center; color: var(--dim); font-size: 12px; text-align: center; padding: 8px; font-weight: 500; }
+  .strip .empty { color: #3f5955; font-size: 13.5px; font-weight: 500; }
+
+  @media (max-width: 1150px) {
+    .body { grid-template-columns: 1fr; }
+    .steps { flex-direction: row; overflow-x: auto; }
+    .st { flex: 0 0 170px; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="lib/react.production.min.js"></script>
+<script src="lib/react-dom.production.min.js"></script>
+<script src="scenarii.js"></script>
+<script>
+(function () {
+  var e = React.createElement;
+  var useState = React.useState, useRef = React.useRef, useEffect = React.useEffect;
+
+  function mmss(s) {
+    s = Math.max(0, Math.round(s));
+    var m = Math.floor(s / 60), x = s % 60;
+    return m + ':' + (x < 10 ? '0' : '') + x;
+  }
+
+  function App() {
+    var a = useState(''), text = a[0], setText = a[1];
+    var b = useState(null), route = b[0], setRoute = b[1];
+    var c = useState(-1), stage = c[0], setStage = c[1];
+    var d = useState(null), now = d[0], setNow = d[1];
+    var f = useState(null), shot = f[0], setShot = f[1];
+    var g = useState([]), strip = g[0], setStrip = g[1];
+    var h = useState({}), prog = h[0], setProg = h[1];
+    var i2 = useState(false), running = i2[0], setRunning = i2[1];
+    var j = useState(false), fin = j[0], setFin = j[1];
+
+    var timers = useRef([]), stripBox = useRef(null);
+    var speed = (typeof SHOW_SPEED === 'number' && SHOW_SPEED > 0) ? SHOW_SPEED : 40;
+
+    useEffect(function () { if (stripBox.current) stripBox.current.scrollLeft = stripBox.current.scrollWidth; }, [strip]);
+    useEffect(function () { return function () { timers.current.forEach(clearTimeout); }; }, []);
+
+    function start(q) {
+      var query = (q === undefined ? text : q).trim();
+      if (!query) return;
+      timers.current.forEach(clearTimeout); timers.current = [];
+
+      var r = pickRoute(query);
+      setText(query); setRoute(r); setStage(-1); setNow(null); setShot(null);
+      setStrip([]); setProg({}); setFin(false); setRunning(true);
+
+      var per = {};
+      r.steps.forEach(function (s) { per[s.stage] = (per[s.stage] || 0) + 1; });
+
+      var t = 450, uid = 0, seen = {};
+
+      r.steps.forEach(function (st) {
+        var shown = st.render ? Math.max(1700, (st.wait * 1000) / speed) : Math.max(560, (st.wait * 1000) / speed);
+        var visual = st.input || st.art || null;
+
+        timers.current.push(setTimeout(function () {
+          setStage(st.stage);
+          setNow({ who: st.who, text: st.text, warn: st.warn, render: !!st.render, total: st.wait, left: st.wait, frac: 0 });
+          if (visual) setShot({ kind: visual.type === 'text' ? 'text' : 'image', data: visual, key: 's' + (++uid) });
+        }, t));
+
+        var ticks = st.render ? 40 : 8;
+        for (var q2 = 1; q2 <= ticks; q2++) {
+          (function (n) {
+            timers.current.push(setTimeout(function () {
+              var frac = n / ticks;
+              setNow(function (p) { return p ? Object.assign({}, p, { left: st.wait * (1 - frac), frac: frac }) : p; });
+              setProg(function (p) {
+                var o = Object.assign({}, p);
+                o[st.stage] = Math.round(((seen[st.stage] || 0) + frac) / per[st.stage] * 100);
+                return o;
+              });
+            }, t + (shown / ticks) * n));
+          })(q2);
+        }
+
+        t += shown;
+
+        timers.current.push(setTimeout(function () {
+          seen[st.stage] = (seen[st.stage] || 0) + 1;
+          if (visual) {
+            setStrip(function (p) {
+              return p.concat([{ id: 'f' + p.length, src: visual.src, title: visual.title || '', text: visual.type === 'text' }]);
+            });
+          }
+        }, t));
+        t += 140;
+      });
+
+      timers.current.push(setTimeout(function () {
+        setStage(CREW.length); setFin(true); setRunning(false);
+        setNow(null); setShot({ kind: 'video', data: r, key: 'final' });
+      }, t + 350));
+    }
+
+    var overall = fin ? 100 : stage < 0 ? 0 : Math.round(((stage + (now && now.frac ? now.frac : 0)) / CREW.length) * 100);
+
+    var sceneInner;
+    if (now && now.render) {
+      var pct = Math.round((now.frac || 0) * 100);
+      sceneInner = e('div', { className: 'render' },
+        e('div', { className: 'big' }, mmss(now.left)),
+        e('div', { className: 'cap' }, now.text + ' · осталось из ' + mmss(now.total)),
+        e('div', { className: 'ring' }, e('i', { style: { width: pct + '%' } })));
+    } else if (shot && shot.kind === 'image') {
+      sceneInner = e(React.Fragment, null,
+        e('img', { className: 'shot', src: shot.data.src, alt: shot.data.title, key: shot.key }),
+        e('div', { className: 'tag' }, e('b', null, shot.data.title),
+          shot.data.note ? ' · ' + shot.data.note : shot.data.caption ? ' · ' + shot.data.caption : ''));
+    } else if (shot && shot.kind === 'text') {
+      sceneInner = e(React.Fragment, null,
+        e('pre', { key: shot.key }, shot.data.body),
+        e('div', { className: 'tag' }, e('b', null, shot.data.title), shot.data.caption ? ' · ' + shot.data.caption : ''));
+    } else if (shot && shot.kind === 'video') {
+      var bits = String(shot.data.meta || '').split('·').map(function (x) { return x.trim(); }).filter(Boolean);
+      sceneInner = e('div', { className: 'fin' },
+        e('video', { src: shot.data.video, controls: true, autoPlay: true, playsInline: true, key: 'v' }),
+        e('div', { className: 'info' },
+          e('h4', null, 'Ролик ', e('span', null, 'готов')),
+          e('p', null, shot.data.kind),
+          e('ul', null, bits.map(function (x, i) {
+            return e('li', { key: i }, e('em', null, '✓'), x);
+          }))
+        ));
+    } else {
+      sceneInner = e('p', { className: 'idle' }, 'Напиши задачу сверху. Команда из шести AI-сотрудников разберёт её, соберёт материалы и снимет ролик, а здесь будет видно каждый шаг.');
+    }
+
+    return e(React.Fragment, null,
+      e('div', { className: 'top' },
+        e('div', { className: 'logo' }, 'AI', e('span', null, '-'), 'креативщик'),
+        e('input', { value: text, placeholder: 'Что снимаем? Напиши задачу словами',
+          onChange: function (ev) { setText(ev.target.value); },
+          onKeyDown: function (ev) { if (ev.key === 'Enter') start(); }, disabled: running }),
+        e('button', { className: 'go', onClick: function () { start(); }, disabled: running || !text.trim() },
+          running ? 'работаю' : fin ? 'ещё раз' : 'поехали'),
+        e('div', { className: 'hint' }, ROUTES.map(function (r) {
+          return e('button', { key: r.id, disabled: running,
+            onClick: function () { setText(r.examples[0]); start(r.examples[0]); } }, r.btn || r.kind);
+        }))
+      ),
+
+      e('div', { className: 'body' },
+        e('div', { className: 'steps' }, CREW.map(function (m, i) {
+          var cls = i < stage ? 'done' : i === stage ? 'active' : '';
+          var p = i < stage ? 100 : (prog[i] || 0);
+          return e('div', { className: 'st ' + cls, key: m.role },
+            e('div', { className: 'row' }, e('em', null, i < stage ? '✓' : String(i + 1)), e('b', null, m.role.replace('AI-', ''))),
+            e('div', { className: 'p' }, e('i', { style: { width: p + '%' } })));
+        })),
+
+        e('div', { className: 'scene' },
+          e('div', { className: 'stage' }, sceneInner),
+
+          e('div', { className: 'say' + (now ? '' : ' idle') },
+            e('div', { className: 'dot' }),
+            e('div', { className: 'who' }, now ? 'AI-' + now.who : fin ? 'готово' : 'жду задачу'),
+            e('div', { className: 'txt' + (now && now.warn ? ' warn' : '') },
+              now ? now.text : fin ? 'Ролик собран, играет выше.' : route ? route.plan : ''),
+            e('div', { className: 'num' }, overall + '%')
+          ),
+
+          e('div', { className: 'strip', ref: stripBox },
+            strip.length === 0
+              ? e('span', { className: 'empty' }, 'Здесь копится всё, что агент уже сделал.')
+              : strip.map(function (x, i) {
+                  return x.text
+                    ? e('div', { className: 'thumb txt', key: x.id, style: { animationDelay: (i * 40) + 'ms' } }, x.title)
+                    : e('div', { className: 'thumb', key: x.id, style: { animationDelay: (i * 40) + 'ms' } },
+                        e('img', { src: x.src, alt: x.title }), e('div', { className: 'n' }, x.title));
+                })
+          )
+        )
+      )
+    );
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(e(App));
+})();
+</script>
+</body>
+</html>
