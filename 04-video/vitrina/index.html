@@ -118,6 +118,48 @@
     .st { flex: 0 0 170px; }
   }
 </style>
+<script>
+/* звук: аккорд, когда сотрудник закрыл свой кусок, и длинный на финале */
+(function(){
+  var actx = null;
+  window.__ZVUK__ = { on: false };
+  function ctx(){
+    if(!actx){
+      var C = window.AudioContext || window.webkitAudioContext;
+      if(!C) return null;
+      actx = new C();
+    }
+    if(actx.state === "suspended") actx.resume();
+    return actx;
+  }
+  function note(f, at, len, vol){
+    var a = ctx(); if(!a) return;
+    var o = a.createOscillator(), g = a.createGain();
+    o.type = "triangle";
+    o.frequency.setValueAtTime(f, a.currentTime + at);
+    g.gain.setValueAtTime(0, a.currentTime + at);
+    g.gain.linearRampToValueAtTime(vol, a.currentTime + at + .015);
+    g.gain.exponentialRampToValueAtTime(.0001, a.currentTime + at + len);
+    o.connect(g); g.connect(a.destination);
+    o.start(a.currentTime + at); o.stop(a.currentTime + at + len + .05);
+  }
+  window.__play = function(kind){
+    if(!window.__ZVUK__.on) return;
+    if(kind === "final"){ note(523.25,0,.5,.15); note(659.25,.1,.5,.13);
+                          note(783.99,.2,.5,.12); note(1046.5,.3,.7,.11); }
+    else if(kind === "step"){ note(880,0,.09,.08); }
+    else { note(659.25,0,.18,.16); note(830.61,.09,.18,.14); note(987.77,.18,.34,.12); }
+  };
+  document.addEventListener("click", function(e){
+    var b = e.target.closest && e.target.closest("[data-zvuk]");
+    if(!b) return;
+    window.__ZVUK__.on = !window.__ZVUK__.on;
+    b.dataset.on = window.__ZVUK__.on ? "1" : "0";
+    b.textContent = window.__ZVUK__.on ? "звук включён" : "включить звук";
+    if(window.__ZVUK__.on) window.__play("step");
+  });
+})();
+</script>
 </head>
 <body>
 <div id="root"></div>
@@ -173,6 +215,7 @@
 
         timers.current.push(setTimeout(function () {
           setStage(st.stage);
+          if(window.__play) window.__play('done');
           setNow({ who: st.who, text: st.text, warn: st.warn, render: !!st.render, total: st.wait, left: st.wait, frac: 0 });
           if (visual) setShot({ kind: visual.type === 'text' ? 'text' : 'image', data: visual, key: 's' + (++uid) });
         }, t));
@@ -207,6 +250,7 @@
 
       timers.current.push(setTimeout(function () {
         setStage(CREW.length); setFin(true); setRunning(false);
+        if(window.__play) window.__play('final');
         setNow(null); setShot({ kind: 'video', data: r, key: 'final' });
       }, t + 350));
     }
@@ -255,7 +299,9 @@
         e('div', { className: 'hint' }, ROUTES.map(function (r) {
           return e('button', { key: r.id, disabled: running,
             onClick: function () { setText(r.examples[0]); start(r.examples[0]); } }, r.btn || r.kind);
-        }))
+        }).concat([
+          e('button', { key: 'zvuk', 'data-zvuk': '1', 'data-on': '0' }, 'включить звук')
+        ]))
       ),
 
       e('div', { className: 'body' },

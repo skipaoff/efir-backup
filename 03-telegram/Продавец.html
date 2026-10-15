@@ -164,6 +164,10 @@ body{background:var(--void);color:var(--ink);font-family:var(--body);font-size:1
 .go:hover{transform:translateY(-1px)}
 .go:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 .foot{font-family:var(--mono);font-size:10px;color:var(--dim);letter-spacing:.06em;text-align:center}
+.snd{margin-top:8px;border:1px solid var(--line);background:var(--fill);color:var(--mid);cursor:pointer;
+  border-radius:999px;padding:5px 11px;font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;
+  text-transform:uppercase;white-space:nowrap}
+.snd[data-on="1"]{color:var(--accent);border-color:rgba(49,233,129,.45)}
 /* макет: телефон с перепиской — стоит слева, сцена справа */
 .stagewrap{flex-direction:row;align-items:stretch}
 
@@ -238,6 +242,7 @@ body{background:var(--void);color:var(--ink);font-family:var(--body);font-size:1
     <div>
       <span class="lab" id="clockLab">времени прошло</span>
       <div class="clock" id="clock">0:00</div>
+      <button class="snd" id="snd" type="button" data-on="0"><span>включить звук</span></button>
     </div>
     <div class="bar"><i id="prog"></i></div>
   </header>
@@ -490,6 +495,47 @@ function revealScene(frac){
   });
 }
 
+/* звук: короткий аккорд, когда специалист закрыл свой шаг */
+let actx = null, zvukOn = false;
+function ctx(){
+  if(!actx){
+    const C = window.AudioContext || window.webkitAudioContext;
+    if(!C) return null;
+    actx = new C();
+  }
+  if(actx.state === "suspended") actx.resume();
+  return actx;
+}
+function note(freq, at, len, vol){
+  const a = ctx(); if(!a) return;
+  const o = a.createOscillator(), g = a.createGain();
+  o.type = "triangle";
+  o.frequency.setValueAtTime(freq, a.currentTime + at);
+  g.gain.setValueAtTime(0, a.currentTime + at);
+  g.gain.linearRampToValueAtTime(vol, a.currentTime + at + .015);
+  g.gain.exponentialRampToValueAtTime(.0001, a.currentTime + at + len);
+  o.connect(g); g.connect(a.destination);
+  o.start(a.currentTime + at); o.stop(a.currentTime + at + len + .05);
+}
+function play(kind){
+  if(!zvukOn) return;
+  if(kind === "done"){ note(659.25,0,.18,.16); note(830.61,.09,.18,.14); note(987.77,.18,.34,.12); }
+  else if(kind === "final"){ note(523.25,0,.5,.15); note(659.25,.1,.5,.13);
+                             note(783.99,.2,.5,.12); note(1046.5,.3,.7,.11); }
+  else { note(880,0,.09,.08); }
+}
+(function(){
+  const b = el("snd");
+  if(!b) return;
+  b.addEventListener("click", function(){
+    zvukOn = !zvukOn;
+    b.dataset.on = zvukOn ? "1" : "0";
+    b.querySelector("span").textContent = zvukOn ? "звук включён" : "включить звук";
+    if(zvukOn) play("step");
+  });
+})();
+let bylShag = -1, bylFinal = false;
+
 function frame(now){
   const dt = Math.min(0.25,(now-last)/1000); last = now;
   if(elapsed < TOTAL) elapsed = Math.min(TOTAL, elapsed + dt*speed);
@@ -533,6 +579,12 @@ function frame(now){
   if(builtStep !== cur) buildScene(cur);
   revealScene(finished ? 1 : frac);
   if(window.STAGE && STAGE.tick) STAGE.tick(STEPS[cur].scene, finished ? 1 : frac, finished, elapsed / TOTAL);
+
+  if(!finished && cur !== bylShag){
+    if(bylShag >= 0) play("done");
+    bylShag = cur;
+  }
+  if(finished && !bylFinal){ bylFinal = true; play("final"); }
 
   if(finished && el("fin").hidden){
     el("fin").hidden = false;
